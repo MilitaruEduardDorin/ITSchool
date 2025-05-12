@@ -1,2 +1,0 @@
-#ITSchool
-#Inca o descriere:
