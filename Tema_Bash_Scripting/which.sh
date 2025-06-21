@@ -1,3 +1,4 @@
+#!/bin/bash
 #! /bin/bash
 
 ##Faceti un script cu numele which.sh ce:

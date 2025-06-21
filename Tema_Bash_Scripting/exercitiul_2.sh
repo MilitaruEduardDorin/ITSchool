@@ -17,7 +17,9 @@ if [ ! -f "$first_file" ] || [ ! -f "$second_file" ]; then
 	exit 1
 fi
 cale_first_file=$(pwd $first_file)
+echo "$cale_first_file"
 cale_second_file=$(pwd $second_file)
+echo "$cale_second_file"
 
 ### Dorin: echo "~/ITSchool/Tema_Bash_Scripting/exercitiul_1.sh" | awk -F'/' '{for(i=1;i<NF;i++) printf "%s/", $i; print ""}' O ora m-am chinuit la asta pana sa imi dau seama ca pwd era cea mai la indemana :))
 

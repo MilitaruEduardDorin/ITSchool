@@ -5,19 +5,19 @@
 
 waiting_for=$(ls | grep -w fisier_pt_exercitiul_1.sh) #Fisier de verificat
 
-#while true; do
-#	if [ -f "$waiting_for" ]; then
-#		echo "Fisierul $waiting_for exista "
-#		break
-#	else
-#		waiting_for=$(ls | grep -w fisier_pt_exercitiul_1.sh)
-#		echo "Inca nu exista fisierul cautat. Rulez pana cand acesta va fi creat"
-#		sleep 5
-#		continue
-#	fi
-#done
+# while true; do
+# 	if [ -f "$waiting_for" ]; then
+# 		echo "Fisierul $waiting_for exista "
+# 		break
+# 	else
+# 		waiting_for=$(ls | grep -w fisier_pt_exercitiul_1.sh)
+# 		echo "Inca nu exista fisierul cautat. Rulez pana cand acesta va fi creat"
+# 		sleep 5
+# 		continue
+# 	fi
+# done
 
-#echo "Rularea in bucla s-a incheiat dupa gasirea fisierului"
+# echo "Rularea in bucla s-a incheiat dupa gasirea fisierului"
 
 
 ##Bonus (dificultate medie): Modificați scriptul să nu aștepte la nesfarsit ci maxim 1 minut. Dar daca fisierul este create mai devreme de 1 minut scriptul trebuie sa se termine mai devreme.
