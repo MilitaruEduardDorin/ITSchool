@@ -1,0 +1,14 @@
+- name: creaza fisier gol
+  hosts: frontend
+  tasks:
+    - name: creaza fisier 1
+      file:
+        path: /tmp/test.txt
+        state: touch
+        mode: u=rw,g=rw,o=r
+
+    - name: creaza fisier 2
+      file:
+        path: /tmp/test2.txt
+        state: touch
+        mode: u=rw,g=rw,o=r

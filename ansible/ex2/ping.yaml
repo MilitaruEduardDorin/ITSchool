@@ -1,0 +1,9 @@
+- name: Ping la hosturile din grupul all din inventar
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Testez ping
+      ping:
+
+    - name: Testez ping 2
+      ping:

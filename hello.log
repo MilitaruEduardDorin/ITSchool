@@ -1227,20 +1227,7 @@ hello @ Mon 26 May 2025 08:12:00 PM EEST
 hello @ Mon 26 May 2025 08:12:01 PM EEST
 hello @ Mon 26 May 2025 08:12:02 PM EEST
 hello @ Mon 26 May 2025 08:12:04 PM EEST
-hello @ Mon 26 May 2025 08:12:05 PM EEST
-hello @ Mon 26 May 2025 08:12:06 PM EEST
-hello @ Mon 26 May 2025 08:12:07 PM EEST
-hello @ Mon 26 May 2025 08:12:09 PM EEST
-hello @ Mon 26 May 2025 08:12:10 PM EEST
-hello @ Mon 26 May 2025 08:12:11 PM EEST
-hello @ Mon 26 May 2025 08:12:13 PM EEST
-hello @ Mon 26 May 2025 08:12:14 PM EEST
-hello @ Mon 26 May 2025 08:12:15 PM EEST
-hello @ Mon 26 May 2025 08:12:16 PM EEST
-hello @ Mon 26 May 2025 08:12:17 PM EEST
-hello @ Mon 26 May 2025 08:12:18 PM EEST
-hello @ Mon 26 May 2025 08:12:19 PM EEST
-hello @ Mon 26 May 2025 08:12:20 PM EEST
+hello @ Mon 26 May 2
 hello @ Mon 26 May 2025 08:12:21 PM EEST
 hello @ Mon 26 May 2025 08:12:22 PM EEST
 hello @ Mon 26 May 2025 08:12:23 PM EEST
@@ -1270,3 +1257,6 @@ hello @ Mon 26 May 2025 08:12:51 PM EEST
 hello @ Mon 26 May 2025 08:12:52 PM EEST
 hello @ Mon 26 May 2025 08:12:53 PM EEST
 hello @ Mon 26 May 2025 08:12:54 PM EEST
+Nu s-a schimbat nimic. Nu se va face backup
+S-a realizat backup pt /home/eu/ITSchool/hello.log in /home/eu/ITSchool/Teme/Tema2_Python/Tema2_Ex3_Backup/hello.log_20250730_191256
+S-a realizat backup pt /home/eu/ITSchool/hello.log in /home/eu/ITSchool/Teme/Tema2_Python/Tema2_Ex3_Backup/hello.log_20250730_191401
