@@ -1,0 +1,101 @@
+pipeline {
+
+    agent { label 'docker && pip' }
+
+    environment {
+        TAG = "${BUILD_NUMBER}"
+        DOCKERHUB_CREDENTIALS_ID = 'dockerhub-creds-id'
+        DOCKERHUB_CREDENTIALS = credentials("${DOCKERHUB_CREDENTIALS_ID}")
+        IMAGE_NAME = "${DOCKERHUB_CREDENTIALS_USR}/python-simple-server"
+        WORKDIR = "${env.WORKSPACE}/jenkins/exercitii/ex12/"
+    }
+
+    stages {
+
+        stage('Lint') {
+            steps {
+              dir("${WORKDIR}") {
+                  sh 'printenv'
+                  sh 'pip install flake8'
+                  sh 'python3 -m flake8 .'
+              }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                dir("${WORKDIR}") {
+                    sh 'pip install -r requirements.txt'
+                    sh 'python3 -m pytest . --junitxml=report.xml'
+                    junit 'report.xml'
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    dir("${WORKDIR}") {
+                        dockerImage = docker.build("${IMAGE_NAME}:${TAG}")
+                    }
+                }
+            }
+        }
+
+        stage('Confirmare Yes/No Push To Docker Hub?') {
+            steps {
+                script {
+                    def confirmare = 'Nu'  // valoare implicită în caz de timeout
+
+                    try {
+                        timeout(time: 2, unit: 'MINUTES') {
+                            confirmare = input(
+                                message: 'Vrei să dai push la imagine pe Docker Hub?',
+                                ok: 'Continuă',
+                                parameters: [
+                                    choice(name: 'CONFIRM', choices: ['Da', 'Nu'], description: 'Selectează o opțiune')
+                                ]
+                            )
+                        }
+                    } catch (err) {
+                        echo "Timpul de răspuns a expirat. Se consideră alegerea: Nu"
+                    }
+
+                    echo "Alegere finală: ${confirmare}"
+
+                    if (confirmare == 'Da') {
+                        env.PUSH_TO_DOCKERHUB = 'true'
+                    }
+                }
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            when {
+                expression { return env.PUSH_TO_DOCKERHUB == 'true' }
+            }
+            steps {
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', "${DOCKERHUB_CREDENTIALS_ID}") {
+                        dockerImage.push()
+                        // Push latest tag too (optional)
+                        dockerImage.push('latest')
+                    }
+                }
+            }
+
+            post {
+                success {
+                    echo 'Push-ul a fost efectuat cu succes!'
+                    echo "Vezi imaginea aici: https://hub.docker.com/repository/docker/${IMAGE_NAME}"
+                }
+                failure {
+                    echo 'Push-ul a eșuat! Verifica logurile.'
+                }
+            }
+        }
+
+        
+    }
+}
+

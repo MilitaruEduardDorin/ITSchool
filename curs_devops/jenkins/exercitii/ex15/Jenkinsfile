@@ -1,0 +1,59 @@
+pipeline {
+    agent { label 'docker && pip' }
+
+    environment {
+        DOCKERHUB_CREDENTIALS_ID = 'dockerhub-creds-id'
+        DOCKERHUB_CREDENTIALS = credentials("${DOCKERHUB_CREDENTIALS_ID}")
+        IMAGE_NAME = "${DOCKERHUB_CREDENTIALS_USR}/python-simple-server:latest"
+        CONTAINER_NAME = "python-server"
+        PORT = "8090"
+        WORKDIR = "${env.WORKSPACE}/jenkins/exercitii/ex15/"
+    }
+
+    stages {
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    sh """
+                    # Delete previous deployment if exists
+                    minikube kubectl -- delete deployment \${CONTAINER_NAME} || true
+                    minikube kubectl -- delete svc \${CONTAINER_NAME} || true
+
+                    # Create deployment
+                    minikube kubectl -- create deployment \${CONTAINER_NAME} --image=\${IMAGE_NAME}
+
+                    # Expose the pod on port 8090
+                    minikube kubectl -- expose deployment \${CONTAINER_NAME} --type=NodePort --port=\${PORT} --target-port=\${PORT}
+                    """
+                }
+            }
+        }
+
+        stage('Wait for deploy to finish') {
+            steps {
+                script {
+                    sh """#!/bin/bash
+                    for retry_number in {1..10}; do
+                        echo "Check status of the deployment"
+                        if minikube kubectl -- get pods | grep \${CONTAINER_NAME} | grep Running; then
+                            echo "Deployment complete with success"
+                            exit 0
+                        else
+                            echo "Not Ready yet"
+                            sleep 5
+                        fi
+                    done
+                    echo "Deployment failed!"
+                    exit 1
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "Deployment script completed"
+        }
+    }
+}

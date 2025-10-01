@@ -1,0 +1,119 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Alege Mediu') {
+            steps {
+                script {
+                    def envChoice = input(
+                        message: 'Pe ce mediu vrei să faci deploy?',
+                        ok: 'Continuă',
+                        parameters: [
+                            choice(name: 'ENVIRONMENT', choices: ['dev', 'staging', 'prod'], description: 'Alege mediul de deploy')
+                        ]
+                    )
+                    env.ENVIRONMENT = envChoice
+                    echo "Mediu ales: ${env.ENVIRONMENT}"
+                }
+            }
+        }
+
+        stage('Detalii Deploy') {
+            steps {
+                script {
+                    def deployDetails = input(
+                        message: 'Introduce detalii pentru deploy:',
+                        ok: 'Trimite',
+                        parameters: [
+                            string(name: 'DOCKER_IMAGE', defaultValue: 'myapp', description: 'Numele imaginii Docker'),
+                            string(name: 'VERSION', defaultValue: 'v1.0.0', description: 'Versiunea imaginii')
+                        ]
+                    )
+                    env.DOCKER_IMAGE = deployDetails['DOCKER_IMAGE']
+                    env.VERSION = deployDetails['VERSION']
+                    echo "Imagine: ${env.DOCKER_IMAGE}, Versiune: ${env.VERSION}"
+                }
+            }
+        }
+
+        stage('Vrei să rulezi teste?') {
+            steps {
+                script {
+                    def testChoice = input(
+                        message: 'Rulezi teste înainte de deploy?',
+                        ok: 'Răspunde',
+                        parameters: [
+                            booleanParam(name: 'RUN_TESTS', defaultValue: true, description: 'Rulează teste?')
+                        ]
+                    )
+                    env.RUN_TESTS = testChoice
+                }
+            }
+        }
+
+        stage('Rulează Teste') {
+            when {
+                expression { return env.RUN_TESTS == 'true' || env.RUN_TESTS == true }
+            }
+            steps {
+                echo "Rulăm teste pentru imaginea ${env.DOCKER_IMAGE}:${env.VERSION}..."
+                sh 'sleep 2'
+                echo "Testele au trecut cu succes!"
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo "Deploy imagine ${env.DOCKER_IMAGE}:${env.VERSION} în mediu ${env.ENVIRONMENT}..."
+                sh 'sleep 2'
+                echo "Deploy finalizat!"
+            }
+        }
+
+        stage('Rollback?') {
+            steps {
+                script {
+                    def confirmare = 'Nu'  // valoare implicită în caz de timeout
+
+                    try {
+                        timeout(time: 2, unit: 'MINUTES') {
+                            confirmare = input(
+                                message: 'Vrei să dai Rollback la deploy?',
+                                ok: 'Continuă',
+                                parameters: [
+                                    choice(name: 'CONFIRM', choices: ['Da', 'Nu'], description: 'Selectează o opțiune')
+                                ]
+                            )
+                        }
+                    } catch (err) {
+                        echo "Timpul de răspuns a expirat. Se consideră alegerea: Nu"
+                    }
+
+                    echo "Alegere finală: ${confirmare}"
+
+                    if (confirmare == 'Da') {
+                        env.DO_ROLLBACK = 'true'
+                    }
+                    echo "Decizie rollback: ${env.DO_ROLLBACK}"
+                }
+            }
+        }
+
+        stage('Execută Rollback') {
+            when {
+                expression { return env.DO_ROLLBACK == 'true' || env.DO_ROLLBACK == true }
+            }
+            steps {
+                echo "Rollback în curs pentru ${env.DOCKER_IMAGE}:${env.VERSION}..."
+                sh 'sleep 2'
+                echo "Rollback complet!"
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline terminat.'
+        }
+    }
+}
